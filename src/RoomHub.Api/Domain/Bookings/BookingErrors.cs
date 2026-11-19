@@ -22,6 +22,9 @@ public static class BookingErrors
     public static readonly Error DurationExceedsFourHours =
         Error.Validation("Booking.DurationExceedsFourHours", "A booking cannot last more than 4 hours.");
 
+    public static readonly Error DurationExceedsRoomLimit =
+        Error.Validation("Booking.DurationExceedsRoomLimit", "A booking for a room with capacity greater than 10 cannot last more than 2 hours.");
+
     public static readonly Error RoomOccupied =
         Error.Conflict("Booking.RoomOccupied", "The room is already booked in this interval.");
 

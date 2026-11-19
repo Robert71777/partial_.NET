@@ -55,8 +55,16 @@ public sealed class Booking
         if (startUtc < nowUtc)
             return Result<Booking>.Failure(BookingErrors.StartInThePast);
 
-        if ((endUtc - startUtc) > TimeSpan.FromHours(4))
-            return Result<Booking>.Failure(BookingErrors.DurationExceedsFourHours);
+        // R6 / R10: max duration depends on room capacity
+        var maxDuration = room.Capacity > 10
+            ? TimeSpan.FromHours(2)
+            : TimeSpan.FromHours(4);
+        var durationError = room.Capacity > 10
+            ? BookingErrors.DurationExceedsRoomLimit
+            : BookingErrors.DurationExceedsFourHours;
+
+        if ((endUtc - startUtc) > maxDuration)
+            return Result<Booking>.Failure(durationError);
 
         return Result<Booking>.Success(new Booking
         {
