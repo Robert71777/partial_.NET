@@ -79,12 +79,17 @@ public sealed class Booking
     }
 
     /// <summary>
-    /// R8: Active → Cancelled. Returns Conflict if already Cancelled.
+    /// R8 / R11: Active → Cancelled.
+    /// Returns Conflict if already Cancelled.
+    /// Returns Conflict if fewer than 60 minutes remain before start (exactly 60 min is allowed).
     /// </summary>
-    public Result<Unit> Cancel()
+    public Result<Unit> Cancel(DateTime nowUtc)
     {
         if (Status == BookingStatus.Cancelled)
             return Result<Unit>.Failure(BookingErrors.AlreadyCancelled);
+
+        if (StartUtc < nowUtc.AddMinutes(60))
+            return Result<Unit>.Failure(BookingErrors.CancellationTooLate);
 
         Status = BookingStatus.Cancelled;
         return Result<Unit>.Success(Unit.Value);
